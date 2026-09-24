@@ -1,4 +1,4 @@
-# HFR — High Frame-Rate Interpolation
+﻿# HFR â€” High Frame-Rate Interpolation
 
 <p align="center">
   <img src="assets/hfr.png" alt="HFR" width="128" />
@@ -13,17 +13,17 @@
 
 ---
 
-## What is HFR? (plain English)
+## What is HFR?
 
 **HFR takes a normal video and makes the motion look smoother** by inventing the frames that sit *between* the ones you already have.
 
-Example: a 24 fps movie → **60 fps** output. Playback looks fluid (less judder on pans and camera moves). You can also use it for **slow motion** (stretch time while keeping motion smooth).
+Example: a 24 fps movie â†’ **60 fps** output. Playback looks fluid (less judder on pans and camera moves). You can also use it for **slow motion** (stretch time while keeping motion smooth).
 
 You do **not** need to know AI, codecs, or command lines. The app is a Windows window:
 
 1. Drop your video(s) in  
 2. Click **Start**  
-3. Wait — finished files land in a folder next to your source  
+3. Wait â€” finished files land in a folder next to your source  
 
 Under the hood it uses your **NVIDIA GPU**. It only accepts **SDR** video today (normal Rec.709). **HDR10 / HLG / Dolby Vision are not supported.**
 
@@ -31,10 +31,10 @@ Under the hood it uses your **NVIDIA GPU**. It only accepts **SDR** video today 
 
 | Step | In plain words |
 |------|----------------|
-| **1 · Scene** | Finds where the picture *cuts* to a new shot, so the AI does not blend two different scenes. |
-| **2 · Interpolate** | Draws the missing frames (RIFE / FILM / GIMM) up to your target fps (default **60**). |
-| **3 · Encode** | Writes a new video on the GPU (HEVC). |
-| **4 · Remux** | Puts your **original audio, subtitles, and chapters** back into the new file. |
+| **1 Â· Scene** | Finds where the picture *cuts* to a new shot, so the AI does not blend two different scenes. |
+| **2 Â· Interpolate** | Draws the missing frames (RIFE / FILM / GIMM) up to your target fps (default **60**). |
+| **3 Â· Encode** | Writes a new video on the GPU (HEVC). |
+| **4 Â· Remux** | Puts your **original audio, subtitles, and chapters** back into the new file. |
 
 Defaults are already sensible: **RIFE**, **60 fps**, scene detect on, encode quality **P7**, bitrate **same as source**, output in a `\HFR\` folder beside the input.
 
@@ -43,16 +43,16 @@ Defaults are already sensible: **RIFE**, **60 fps**, scene detect on, encode qua
 ## Screenshots
 
 <p align="center">
-  <img src="assets/gui-main.png" alt="HFR main window — drop files, Start, pipeline" width="420" />
+  <img src="assets/gui-main.png" alt="HFR main window â€” drop files, Start, pipeline" width="420" />
 </p>
 
-<p align="center"><em>Main window — drop videos, queue them, watch Scene → Interpolate → Remux.</em></p>
+<p align="center"><em>Main window â€” drop videos, queue them, watch Scene â†’ Interpolate â†’ Remux.</em></p>
 
 <p align="center">
-  <img src="assets/gui-settings.png" alt="HFR Settings — fps, engine, scene, encode" width="520" />
+  <img src="assets/gui-settings.png" alt="HFR Settings â€” fps, engine, scene, encode" width="520" />
 </p>
 
-<p align="center"><em>Settings — target fps, engine (RIFE / FILM / GIMM), scene detector, GPU encode, destination.</em></p>
+<p align="center"><em>Settings â€” target fps, engine (RIFE / FILM / GIMM), scene detector, GPU encode, destination.</em></p>
 
 ---
 
@@ -88,8 +88,8 @@ Installs to `C:\DolbyVisionScripts\HFR` by default. Your settings, Pushover keys
 | | |
 |--|--|
 | OS | Windows 10/11 **x64** |
-| GPU | **NVIDIA** (CUDA) — RTX recommended |
-| Input | **SDR** 8-bit / 10-bit Rec.709 — not HDR10 / HLG / Dolby Vision |
+| GPU | **NVIDIA** (CUDA) â€” RTX recommended |
+| Input | **SDR** 8-bit / 10-bit Rec.709 â€” not HDR10 / HLG / Dolby Vision |
 | Disk | Setup ~250 MB + CUDA `.venv` created during install (needs network; can take several minutes) |
 
 ---
@@ -102,7 +102,7 @@ Installs to `C:\DolbyVisionScripts\HFR` by default. Your settings, Pushover keys
 4. Launch **HFR** from the Finish page / Start Menu  
 
 **Repair venv later:** run `create_venv.cmd` in the install folder.  
-**Update the app:** Settings → App update → Check → Update & Install  
+**Update the app:** Settings â†’ App update â†’ Check â†’ Update & Install  
 (Tool updates and App update are separate.)
 
 ---
@@ -115,7 +115,7 @@ Installs to `C:\DolbyVisionScripts\HFR` by default. Your settings, Pushover keys
 | **FILM** | Often smoother on hard / weird motion; slower |
 | **GIMM** | Alternate look (`torch.compile` path) |
 
-Scene detector default: **TransNetV2** @ threshold **0.4**. Encode default: **NVEncC** · preset **P7** · bitrate **same as source**.
+Scene detector default: **TransNetV2** @ threshold **0.4**. Encode default: **NVEncC** Â· preset **P7** Â· bitrate **same as source**.
 
 ---
 
