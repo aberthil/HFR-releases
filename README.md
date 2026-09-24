@@ -11,15 +11,60 @@
   <img src="https://img.shields.io/badge/GPU-NVIDIA-76B900?style=flat-square" alt="NVIDIA GPU" />
 </p>
 
-Windows app for **GPU frame-rate interpolation**: scene detect → interpolate → encode.
+---
 
-Pick the engine that fits the job:
+## What is HFR? (plain English)
 
-- **RIFE** (default) — Practical-RIFE via TensorRT — fastest path for most titles
-- **FILM** — Google FILM via TensorRT — often smoother on hard motion
-- **GIMM** — GIMM-VFI (compile backend) — alternate VFI when you want that look
+**HFR takes a normal video and makes the motion look smoother** by inventing the frames that sit *between* the ones you already have.
 
-Native PySide6 GUI · NVIDIA GPU required · one Setup.exe with App Update built in.
+Example: a 24 fps movie → **60 fps** output. Playback looks fluid (less judder on pans and camera moves). You can also use it for **slow motion** (stretch time while keeping motion smooth).
+
+You do **not** need to know AI, codecs, or command lines. The app is a Windows window:
+
+1. Drop your video(s) in  
+2. Click **Start**  
+3. Wait — finished files land in a folder next to your source  
+
+Under the hood it uses your **NVIDIA GPU**. It only accepts **SDR** video today (normal Rec.709). **HDR10 / HLG / Dolby Vision are not supported.**
+
+### What happens to each file
+
+| Step | In plain words |
+|------|----------------|
+| **1 · Scene** | Finds where the picture *cuts* to a new shot, so the AI does not blend two different scenes. |
+| **2 · Interpolate** | Draws the missing frames (RIFE / FILM / GIMM) up to your target fps (default **60**). |
+| **3 · Encode** | Writes a new video on the GPU (HEVC). |
+| **4 · Remux** | Puts your **original audio, subtitles, and chapters** back into the new file. |
+
+Defaults are already sensible: **RIFE**, **60 fps**, scene detect on, encode quality **P7**, bitrate **same as source**, output in a `\HFR\` folder beside the input.
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="assets/gui-main.png" alt="HFR main window — drop files, Start, pipeline" width="420" />
+</p>
+
+<p align="center"><em>Main window — drop videos, queue them, watch Scene → Interpolate → Remux.</em></p>
+
+<p align="center">
+  <img src="assets/gui-settings.png" alt="HFR Settings — fps, engine, scene, encode" width="520" />
+</p>
+
+<p align="center"><em>Settings — target fps, engine (RIFE / FILM / GIMM), scene detector, GPU encode, destination.</em></p>
+
+---
+
+## How to use (quick start)
+
+1. Install from [Releases](https://github.com/aberthil/HFR-releases/releases/latest) and open **HFR**.  
+2. **Browse** or **drag-and-drop** SDR video files (or a folder).  
+3. Optional: open **Settings** if you want a different fps, engine, or output folder.  
+4. Click **+ Add to Queue** (or **Add All**), then **Start**.  
+5. When it finishes, open the `\HFR\` folder next to your source (or whatever destination you set).
+
+**Queue / Log / Settings** sit in the top-right. Pause and Cancel work while a job is running. You can stack many files and walk away.
 
 ---
 
@@ -34,17 +79,7 @@ Native PySide6 GUI · NVIDIA GPU required · one Setup.exe with App Update built
 > Prefer the **latest** tag always:  
 > https://github.com/aberthil/HFR-releases/releases/latest
 
-Install to `C:\DolbyVisionScripts\HFR` by default. Settings / Pushover / queue live in AppData and survive Update; Remove wipes them.
-
----
-
-## What it does
-
-1. **Scene detect** — TransNetV2 (default) or AutoShot  
-2. **Interpolate** — RIFE / FILM / GIMM to your target fps  
-3. **Encode** — NVEncC HEVC (GPU), defaults tuned for archival delivery  
-
-Queue files, tune per job, run batch. Tool updates and App update are both in Settings (Tool updates ≠ App update).
+Installs to `C:\DolbyVisionScripts\HFR` by default. Your settings, Pushover keys, and queue live in AppData and **survive App Update**. Only a full **Remove** wipes them.
 
 ---
 
@@ -54,8 +89,8 @@ Queue files, tune per job, run batch. Tool updates and App update are both in Se
 |--|--|
 | OS | Windows 10/11 **x64** |
 | GPU | **NVIDIA** (CUDA) — RTX recommended |
-| Disk | Setup ~250 MB + first-run CUDA `.venv` (network; can take several minutes) |
-| After install | Finish Launch waits until `create_venv` succeeds (`venv_cuda_ok.txt`) |
+| Input | **SDR** 8-bit / 10-bit Rec.709 — not HDR10 / HLG / Dolby Vision |
+| Disk | Setup ~250 MB + CUDA `.venv` created during install (needs network; can take several minutes) |
 
 ---
 
@@ -63,25 +98,24 @@ Queue files, tune per job, run batch. Tool updates and App update are both in Se
 
 1. Download **HFR-*-Setup.exe** from [Releases](https://github.com/aberthil/HFR-releases/releases/latest)  
 2. Run Setup (admin)  
-3. Wait for the hidden venv step (progress in the wizard + `install_venv.log`)  
+3. Wait for the venv step (wizard progress + `install_venv.log`)  
 4. Launch **HFR** from the Finish page / Start Menu  
 
-**Repair venv later:** run `create_venv.cmd` in the install folder (visible console).
-
+**Repair venv later:** run `create_venv.cmd` in the install folder.  
 **Update the app:** Settings → App update → Check → Update & Install  
-(keeps AppData userdata; does not replace Tool updates)
+(Tool updates and App update are separate.)
 
 ---
 
-## Engines (defaults)
+## Engines (when you care)
 
-| Engine | Backend | Notes |
-|--------|---------|--------|
-| **RIFE** | TensorRT | Default — best throughput here |
-| **FILM** | TensorRT | Slower; strong on difficult motion |
-| **GIMM** | `torch.compile` | Needs MSVC + triton-windows for compile path |
+| Engine | Notes |
+|--------|--------|
+| **RIFE** (default) | Fastest everyday path (TensorRT) |
+| **FILM** | Often smoother on hard / weird motion; slower |
+| **GIMM** | Alternate look (`torch.compile` path) |
 
-Scene detector default: **TransNetV2** @ thr **0.4**. Encode default: **NVEncC** · preset **P7** · bitrate **same as source**.
+Scene detector default: **TransNetV2** @ threshold **0.4**. Encode default: **NVEncC** · preset **P7** · bitrate **same as source**.
 
 ---
 
@@ -89,26 +123,9 @@ Scene detector default: **TransNetV2** @ thr **0.4**. Encode default: **NVEncC**
 
 ### v1.0.22
 
-Preserve user settings on update: RestoreCredentialsAfterWipe + ForceDirectories; cover `gui_config` / `pushover` / `queue`.
+Preserve user settings on update (`gui_config` / `pushover` / `queue`).
 
-See full history on the [Releases](https://github.com/aberthil/HFR-releases/releases) page.
-
----
-
-## Project layout (installed)
-
-```
-C:\DolbyVisionScripts\HFR\
-  HFR.exe              # GUI
-  Python312\           # bootstrap interpreter for create_venv
-  binaries\            # ffmpeg / NVEncC / tools
-  create_venv.py|.cmd  # first-run / repair CUDA env
-  app_version.json     # App update metadata
-```
-
-User data (not wiped on Update):
-
-`%LOCALAPPDATA%\DolbyVisionScripts\` — `gui_config.json`, `pushover.json`, `queue.json` (and installer Backup/Restore for the same names under `{app}` legacy paths).
+Full history: [Releases](https://github.com/aberthil/HFR-releases/releases).
 
 ---
 
@@ -121,4 +138,4 @@ User data (not wiped on Update):
 
 ## License / support
 
-Windows installers published here for end users. Issues with a specific Setup build: open a discussion on the release that fails, or contact the publisher (`aberthil`).
+Windows installers for end users. Problems with a specific Setup: note the release tag and contact the publisher (`aberthil`).
