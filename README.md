@@ -1,5 +1,16 @@
 # HFR — High Frame-Rate Interpolation
 
+<p align="center">
+  <img src="assets/hfr.png" alt="HFR" width="128" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/aberthil/HFR-releases/releases/latest"><img src="https://img.shields.io/github/v/release/aberthil/HFR-releases?style=flat-square&label=latest" alt="latest release" /></a>
+  <a href="https://github.com/aberthil/HFR-releases/releases/latest"><img src="https://img.shields.io/github/downloads/aberthil/HFR-releases/total?style=flat-square" alt="downloads" /></a>
+  <img src="https://img.shields.io/badge/Windows-x64-0A66C2?style=flat-square" alt="Windows x64" />
+  <img src="https://img.shields.io/badge/GPU-NVIDIA-76B900?style=flat-square" alt="NVIDIA GPU" />
+</p>
+
 Windows app for **GPU frame-rate interpolation**: scene detect → interpolate → encode.
 
 Pick the engine that fits the job:
